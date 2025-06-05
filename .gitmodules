@@ -1,0 +1,3 @@
+[submodule "mmdb-spec"]
+	path = mmdb-spec
+	url = https://github.com/maxmind/MaxMind-DB
