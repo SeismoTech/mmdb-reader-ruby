@@ -1,0 +1,37 @@
+plugins: rubocop-performance
+
+AllCops:
+  TargetRubyVersion: '3.0'
+  NewCops: enable
+
+# For dispatching, some big methods are needed
+Metrics/AbcSize:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# Allow styles that makes sense
+Style/NumericPredicate:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Trailing commas are good.
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+# Prefer spaces at the beginning
+Layout/LineContinuationLeadingSpace:
+  EnforcedStyle: leading
+
+# Allow dependencies at gemspec
+Gemspec/DevelopmentDependencies:
+  Enabled: false
