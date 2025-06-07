@@ -3,6 +3,8 @@
 module Seismo::MaxMind::DB
   # +Decoder+ ...
   class BufferDecoder
+    MAX_OVERREAD = 7
+
     def initialize(buf, pointer_base, offset)
       @buf = buf
       @pointer_base = pointer_base
@@ -40,6 +42,7 @@ module Seismo::MaxMind::DB
 
       @offset = i
 
+      #puts("Type #{type}")
       case type
       when 1 then decode_pointer(size)
       when 2 then decode_string(size)
@@ -56,14 +59,16 @@ module Seismo::MaxMind::DB
       when 13 then decode_end
       when 14 then decode_boolean(size)
       when 15 then decode_float
-      else unknown_type(type)
+      else
+        puts "Unknown type #{type}, #{control}, #{i}, #{@offset}"
+        unknown_type(type)
       end
     end
 
     private
 
-    def unknow_type(type)
-      raise EncodingError.new, "Unknown type #{type}"
+    def unknown_type(type)
+      raise BadDatabaseError, "Unknown type #{type}"
     end
 
     def decode_pointer(size)
@@ -88,11 +93,11 @@ module Seismo::MaxMind::DB
       ptr += @pointer_base
 
       if @follow_pointers
+        #puts("Enter pointer #{ptr} #{size} #{pointer_base}")
         @offset = ptr
         x = decode
+        #puts("Exit pointer")
       else
-        # FIXME
-        # x = Pointer.new ptr
         x = ptr
       end
       @offset = i
@@ -100,7 +105,6 @@ module Seismo::MaxMind::DB
     end
 
     def decode_boolean(size)
-      @offset += 1
       size != 0
     end
 
