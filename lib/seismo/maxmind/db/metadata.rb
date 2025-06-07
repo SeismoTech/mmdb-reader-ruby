@@ -58,8 +58,8 @@ module Seismo::MaxMind::DB
       check_field(map, 'ip_version') do |v|
         METADATA_LEGAL_IP_VERSIONS.include?(v)
       end
-      check_field(map, 'database_type') { |v| v.nil? || v.is_a?(String) }
-      check_field(map, 'build_epoch') { |v| v.nil? || v.is_a?(Integer) }
+      check_field(map, 'database_type') { |v| v.is_a?(String) }
+      check_field(map, 'build_epoch') { |v| v.is_a?(Integer) }
       check_field(map, 'languages') do |v|
         v.nil? || (v.is_a?(Array) && v.all?(String))
       end
