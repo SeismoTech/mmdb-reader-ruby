@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'maxmind/db'
 require 'seismo/maxmind/db'
 
@@ -8,7 +10,7 @@ puts(reader.metadata.inspect)
 loc = reader.locator
 loop do
   ip = IPAddr.new_ntoh(Random.bytes(4))
-  puts("#{ip}")
+  puts(ip)
   info1 = mmreader.get(ip)
   puts(">>>  #{info1}")
   info2 = loc.locate(ip)

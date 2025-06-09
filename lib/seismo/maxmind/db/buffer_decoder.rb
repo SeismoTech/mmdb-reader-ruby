@@ -12,7 +12,9 @@ module Seismo::MaxMind::DB
       @follow_pointers = true
     end
 
-    attr_accessor :pointer_base, :offset, :follow_pointers
+    attr_reader :pointer_base
+
+    attr_accessor :offset, :follow_pointers
 
     def decode
       i = @offset
@@ -42,7 +44,7 @@ module Seismo::MaxMind::DB
 
       @offset = i
 
-      #puts("Type #{type}")
+      # puts("Type #{type}")
       case type
       when 1 then decode_pointer(size)
       when 2 then decode_string(size)
@@ -93,10 +95,10 @@ module Seismo::MaxMind::DB
       ptr += @pointer_base
 
       if @follow_pointers
-        #puts("Enter pointer #{ptr} #{size} #{pointer_base}")
+        # puts("Enter pointer #{ptr} #{size} #{pointer_base}")
         @offset = ptr
         x = decode
-        #puts("Exit pointer")
+        # puts("Exit pointer")
       else
         x = ptr
       end

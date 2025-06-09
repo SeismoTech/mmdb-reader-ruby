@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'benchmark/ips'
 require 'ipaddr'
 require 'maxmind/db'
@@ -23,8 +25,7 @@ Benchmark.ips do |x|
 
   x.report 'seismo' do
     reader = Seismo::MaxMind::DB::Reader.new(DBNAME)
-    loc = reader.locator
-    info = loc.locate(IP)
+    info = reader.get(IP)
     reader.close
     info
   end

@@ -78,5 +78,17 @@ module Seismo::MaxMind::DB
       end
       value
     end
+
+    def each
+      yield 'mayor version', @major_version
+      yield 'minor version', @minor_version
+      yield 'node count', @node_count
+      yield 'record size', @record_size
+      yield 'ip_version', @ip_version
+      yield 'database_type', @database_type
+      yield 'build_epoch', @build_epoch
+      yield 'languages', @language
+      yield 'description', @description
+    end
   end
 end

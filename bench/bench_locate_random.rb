@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'benchmark/ips'
 require 'ipaddr'
 require 'maxmind/db'
@@ -11,13 +13,18 @@ READER_MEMORY = MaxMind::DB.new(
   'mmdbs/GeoLite2-City.mmdb',
   mode: MaxMind::DB::MODE_MEMORY
 )
-LOC = Seismo::MaxMind::DB::Reader.new('mmdbs/GeoLite2-City.mmdb').locator
+READER6 = Seismo::MaxMind::DB::Reader.new('mmdbs/GeoLite2-City.mmdb')
 
 def random_ipv4
   IPAddr.new_ntoh(Random.bytes(4))
 end
 
 Benchmark.ips do |x|
+  # To check the impact of random ip generation
+  # x.report 'Random ip' do
+  #   random_ipv4
+  # end
+
   x.report 'MaxMind file' do
     READER_FILE.get(random_ipv4)
   end
@@ -27,6 +34,6 @@ Benchmark.ips do |x|
   end
 
   x.report 'seismo' do
-    LOC.locate(random_ipv4)
+    READER6.locate(random_ipv4)
   end
 end

@@ -31,7 +31,14 @@ Style/TrailingCommaInHashLiteral:
 # Prefer spaces at the beginning
 Layout/LineContinuationLeadingSpace:
   EnforcedStyle: leading
+# Space around operators has too much information to force an uniform style
+Layout/SpaceAroundOperators:
+  Enabled: false
 
 # Allow dependencies at gemspec
 Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+# Why has Ruby operator precedence in the first place?
+Lint/AmbiguousOperatorPrecedence:
   Enabled: false

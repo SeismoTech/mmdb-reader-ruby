@@ -4,24 +4,25 @@ require 'seismo/maxmind/db'
 require 'minitest/autorun'
 require 'mmdb_util'
 
-class LocatorTest < Minitest::Test
-  DATADIR = "mmdb-spec/test-data"
+class LocateTest < Minitest::Test
+  DATADIR = 'mmdb-spec/test-data'
 
   def test_reader
+    # rubocop:disable Performance/CollectionLiteralInLoop
     [24, 28, 32].each do |recsize|
       [4, 6].each do |ipver|
         filename = "#{DATADIR}/MaxMind-DB-test-ipv#{ipver}-#{recsize}.mmdb"
         reader = Seismo::MaxMind::DB::Reader.new(filename)
         check_metadata(reader, ipver, recsize)
-        loc = reader.locator
         if ipver == 4
-          check_ipv4(loc, filename)
+          check_ipv4(reader, filename)
         else
-          check_ipv6(loc, filename)
+          check_ipv6(reader, filename)
         end
         reader.close
       end
     end
+    # rubocop:enable Performance/CollectionLiteralInLoop
   end
 
   def check_metadata(reader, ipver, recsize)
@@ -37,7 +38,7 @@ class LocatorTest < Minitest::Test
         'zh' => 'Test Database Chinese',
       },
       metadata.description,
-      'description',
+      'description'
     )
     assert_equal(ipver, metadata.ip_version, 'ip_version')
     assert_equal(%w[en zh], metadata.languages, 'languages')
@@ -45,13 +46,13 @@ class LocatorTest < Minitest::Test
     assert_equal(recsize, metadata.record_size, 'record_size')
   end
 
-  def check_ipv4(loc, filename)
+  def check_ipv4(reader, filename)
     6.times do |i|
       address = "1.1.1.#{2**i}"
       assert_equal(
         { 'ip' => address },
-        loc.locate(address),
-        "found expected data record for #{address} in #{filename}",
+        reader.get(address),
+        "found expected data record for #{address} in #{filename}"
       )
     end
 
@@ -67,28 +68,28 @@ class LocatorTest < Minitest::Test
     pairs.each do |key_address, value_address|
       assert_equal(
         { 'ip' => value_address },
-        loc.locate(key_address),
-        "found expected data record for #{key_address} in #{filename}",
+        reader.get(key_address),
+        "found expected data record for #{key_address} in #{filename}"
       )
     end
 
     ['1.1.1.33', '255.254.253.123'].each do |ip|
       assert_nil(
-        loc.locate(ip),
-        "#{ip} is not in #{filename}",
+        reader.get(ip),
+        "#{ip} is not in #{filename}"
       )
     end
   end
 
-  def check_ipv6(loc, filename)
+  def check_ipv6(reader, filename)
     subnets = [
       '::1:ffff:ffff', '::2:0:0', '::2:0:40', '::2:0:50', '::2:0:58',
     ]
     subnets.each do |address|
       assert_equal(
         { 'ip' => address },
-        loc.locate(address),
-        "found expected data record for #{address} in #{filename}",
+        reader.get(address),
+        "found expected data record for #{address} in #{filename}"
       )
     end
 
@@ -105,15 +106,15 @@ class LocatorTest < Minitest::Test
     pairs.each do |key_address, value_address|
       assert_equal(
         { 'ip' => value_address },
-        loc.locate(key_address),
-        "found expected data record for #{key_address} in #{filename}",
+        reader.get(key_address),
+        "found expected data record for #{key_address} in #{filename}"
       )
     end
 
     ['1.1.1.33', '255.254.253.123', '89fa::'].each do |ip|
       assert_nil(
-        loc.locate(ip),
-        "#{ip} is not in #{filename}",
+        reader.get(ip),
+        "#{ip} is not in #{filename}"
       )
     end
   end
@@ -122,8 +123,7 @@ class LocatorTest < Minitest::Test
     reader = Seismo::MaxMind::DB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
-    loc = reader.locator
-    record = loc.locate('::1.1.1.0')
+    record = reader.get('::1.1.1.0')
     assert_equal([1, 2, 3], record['array'])
     assert_equal(true, record['boolean'])
     assert_equal("\x00\x00\x00*".b, record['bytes'])
@@ -137,7 +137,7 @@ class LocatorTest < Minitest::Test
           'utf8_stringX' => 'hello',
         },
       },
-      record['map'],
+      record['map']
     )
     assert_equal(100, record['uint16'])
     assert_equal(268_435_456, record['uint32'])
@@ -159,9 +159,8 @@ class LocatorTest < Minitest::Test
     reader = Seismo::MaxMind::DB::Reader.new(
       "#{DATADIR}/MaxMind-DB-no-ipv4-search-tree.mmdb"
     )
-    loc = reader.locator
-    assert_equal('::/64', loc.locate('1.1.1.1'))
-    assert_equal('::/64', loc.locate('192.1.1.1'))
+    assert_equal('::/64', reader.get('1.1.1.1'))
+    assert_equal('::/64', reader.get('192.1.1.1'))
     reader.close
   end
 
@@ -169,26 +168,24 @@ class LocatorTest < Minitest::Test
     reader = Seismo::MaxMind::DB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-ipv4-24.mmdb"
     )
-    loc = reader.locator
     e = assert_raises ArgumentError do
-      loc.locate('2001::')
+      reader.get('2001::')
     end
     assert_equal(
       'Cannot search the IPv6 address 2001:: in an IPv4 database',
-      e.message,
+      e.message
     )
     reader.close
   end
 
   def test_bad_ip_parameter
     reader = Seismo::MaxMind::DB::Reader.new("#{DATADIR}/GeoIP2-City-Test.mmdb")
-    loc = reader.locator
     e = assert_raises ArgumentError do
-      loc.locate(Object.new)
+      reader.get(Object.new)
     end
     assert_equal(
       'address family must be specified', # Not great, but type is ok
-      e.message,
+      e.message
     )
     reader.close
   end
@@ -197,13 +194,12 @@ class LocatorTest < Minitest::Test
   #   reader = Seismo::MaxMind::DB::Reader.new(
   #     "#{DATADIR}/GeoIP2-City-Test-Broken-Double-Format.mmdb"
   #   )
-  #   loc = reader.locator
   #   e = assert_raises Seismo::MaxMind::DB::BadDatabaseError do
-  #     loc.locate('2001:220::')
+  #     reader.get('2001:220::')
   #   end
   #   assert_equal(
   #     'The MaxMind DB file\'s data section contains bad data (unknown data type or corrupt data)',
-  #     e.message,
+  #     e.message
   #   )
   #   reader.close
   # end
@@ -212,9 +208,8 @@ class LocatorTest < Minitest::Test
     reader = Seismo::MaxMind::DB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
-    loc = reader.locator
     e = assert_raises ArgumentError do
-      loc.locate('not_ip')
+      reader.get('not_ip')
     end
     assert(e.message.include?('invalid address'))
     reader.close
@@ -233,7 +228,7 @@ class LocatorTest < Minitest::Test
     end
     assert_equal(
       'Cannot find metadata start marker at README.md',
-      e.message,
+      e.message
     )
   end
 
@@ -259,10 +254,10 @@ class LocatorTest < Minitest::Test
     )
     reader.close
     e = assert_raises ArgumentError do
-      reader.locator.locate('1.1.1.1')
+      reader.get('1.1.1.1')
     end
     assert_equal(
-      'Type extends beyond end of buffer! (offset=4 > size=0)',
+      'Type extends beyond end of buffer! (offset=580 > size=0)',
       e.message
     )
   end
@@ -274,7 +269,7 @@ class LocatorTest < Minitest::Test
     reader.close
     assert_equal(
       { 'en' => 'MaxMind DB Decoder Test database - contains every MaxMind DB data type' },
-      reader.metadata.description,
+      reader.metadata.description
     )
   end
 
@@ -282,7 +277,6 @@ class LocatorTest < Minitest::Test
     reader = Seismo::MaxMind::DB::Reader.new(
       "#{DATADIR}/GeoIP2-Domain-Test.mmdb"
     )
-    loc = reader.locator
 
     num_threads = 16
     num_lookups = 32
@@ -295,8 +289,8 @@ class LocatorTest < Minitest::Test
     num_threads.times do |i|
       threads << Thread.new do
         num_lookups.times do |j|
-          thread_lookups[i] << loc.locate("65.115.240.#{j}")
-          thread_lookups[i] << loc.locate("2a02:2770:3::#{j}")
+          thread_lookups[i] << reader.get("65.115.240.#{j}")
+          thread_lookups[i] << reader.get("2a02:2770:3::#{j}")
         end
       end
     end
@@ -369,11 +363,4 @@ class LocatorTest < Minitest::Test
   #     assert_equal(test[:right], test[:check_right])
   #   end
   # end
-
-  def test_explore
-    loc = Seismo::MaxMind::DB::Reader.new(
-      'mmdb-spec/test-data/MaxMind-DB-test-decoder.mmdb'
-    ).locator
-    info = loc.locate('::1.1.1.0')
-  end
 end
