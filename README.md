@@ -13,24 +13,26 @@ The current code is based on `IO::Buffer` with memory mapped files.
 Keep in mind that, as of Ruby 3.5, `IO::Buffer` is still experimental
 and memory mapping could even be removed in the future XD.
 
-Prelimary benchmarks against the official MaxMind DB reader Gem shows
-a good performance improvement.
+A few benchmarks against the official MaxMind DB reader Gem shows
+a sensible performance improvement:
 
 - Finding a fixed IP
 
 | | YJIT off | YJIT on |
 |-|-|-|
-|MaxMind File  | 1.240k i/s | 1.677k i/s |
-|MaxMind Memory| 2.761k i/s | 4.471k i/s |
-|Seismo Buffer | 7.616k i/s | 19.521k i/s |
+|MaxMind File                 | 1.302k i/s | 1.677k i/s |
+|MaxMind Memory               | 1.302k i/s | 4.471k i/s |
+|Seismo Buffer                | 7.616k i/s | 19.521k i/s |
+|Seismo Buffer Single Threaded| 9.721k i/s | 25.650k i/s |
 
 - Finding a random IP:
 
 | | YJIT off | YJIT on |
 |-|-|-|
-|MaxMind File  |  1.941k i/s |  2.496k i/s |
-|MaxMind Memory|  4.136k i/s |  6.439k i/s |
-|Seismo Buffer | 10.139k i/s | 23.655k i/s |
+|MaxMind File                 |  1.941k i/s |  2.599k i/s |
+|MaxMind Memory               |  4.136k i/s |  6.439k i/s |
+|Seismo Buffer                |  9.887k i/s | 23.293k i/s |
+|Seismo Buffer Single Threaded| 11.945k i/s | 28.252k i/s |
 
 - Open, locate a fixed IP and close:
 
