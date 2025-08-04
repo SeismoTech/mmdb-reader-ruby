@@ -3,7 +3,7 @@
 require 'benchmark/ips'
 require 'ipaddr'
 require 'maxmind/db'
-require 'seismo/maxmind/db'
+require 'seismo/mmdb'
 
 IP = IPAddr.new '80.37.70.128'
 DBNAME = 'mmdbs/GeoLite2-City.mmdb'
@@ -24,7 +24,7 @@ Benchmark.ips do |x|
   end
 
   x.report 'seismo' do
-    reader = Seismo::MaxMind::DB::Reader.new(DBNAME)
+    reader = Seismo::MMDB::Reader.new(DBNAME)
     info = reader.get(IP)
     reader.close
     info

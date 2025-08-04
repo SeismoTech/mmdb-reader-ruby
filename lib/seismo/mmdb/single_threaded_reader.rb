@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Seismo::MaxMind::DB
+module Seismo::MMDB
   # +Decoder+ ...
   class SingleThreaderReader
     def initialize(miner)

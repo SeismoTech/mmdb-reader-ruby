@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'seismo/maxmind/db'
+require 'seismo/mmdb'
 require 'minitest/autorun'
 require 'mmdb_util'
 
@@ -12,7 +12,7 @@ class LocateTest < Minitest::Test
     [24, 28, 32].each do |recsize|
       [4, 6].each do |ipver|
         filename = "#{DATADIR}/MaxMind-DB-test-ipv#{ipver}-#{recsize}.mmdb"
-        reader = Seismo::MaxMind::DB::Reader.new(filename)
+        reader = Seismo::MMDB::Reader.new(filename)
         check_metadata(reader, ipver, recsize)
         if ipver == 4
           check_ipv4(reader, filename)
@@ -122,7 +122,7 @@ class LocateTest < Minitest::Test
   end
 
   def test_decoder
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
     record = reader.get('::1.1.1.0')
@@ -150,7 +150,7 @@ class LocateTest < Minitest::Test
   end
 
   def test_metadata_pointers
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-metadata-pointers.mmdb"
     )
     assert_equal('Lots of pointers in metadata', reader.metadata.database_type)
@@ -158,7 +158,7 @@ class LocateTest < Minitest::Test
   end
 
   def test_no_ipv4_search_tree
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-no-ipv4-search-tree.mmdb"
     )
     assert_equal('::/64', reader.get('1.1.1.1'))
@@ -167,7 +167,7 @@ class LocateTest < Minitest::Test
   end
 
   def test_ipv6_address_in_ipv4_database
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-ipv4-24.mmdb"
     )
     e = assert_raises ArgumentError do
@@ -181,7 +181,7 @@ class LocateTest < Minitest::Test
   end
 
   def test_bad_ip_parameter
-    reader = Seismo::MaxMind::DB::Reader.new("#{DATADIR}/GeoIP2-City-Test.mmdb")
+    reader = Seismo::MMDB::Reader.new("#{DATADIR}/GeoIP2-City-Test.mmdb")
     e = assert_raises ArgumentError do
       reader.get(Object.new)
     end
@@ -193,10 +193,10 @@ class LocateTest < Minitest::Test
   end
 
   # def test_broken_database
-  #   reader = Seismo::MaxMind::DB::Reader.new(
+  #   reader = Seismo::MMDB::Reader.new(
   #     "#{DATADIR}/GeoIP2-City-Test-Broken-Double-Format.mmdb"
   #   )
-  #   e = assert_raises Seismo::MaxMind::DB::BadDatabaseError do
+  #   e = assert_raises Seismo::MMDB::BadDatabaseError do
   #     reader.get('2001:220::')
   #   end
   #   assert_equal(
@@ -207,7 +207,7 @@ class LocateTest < Minitest::Test
   # end
 
   def test_ip_validation
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
     e = assert_raises ArgumentError do
@@ -219,14 +219,14 @@ class LocateTest < Minitest::Test
 
   def test_missing_database
     e = assert_raises SystemCallError do
-      Seismo::MaxMind::DB::Reader.new('file-does-not-exist.mmdb')
+      Seismo::MMDB::Reader.new('file-does-not-exist.mmdb')
     end
     assert(e.message.include?('No such file or directory'))
   end
 
   def test_nondatabase
-    e = assert_raises Seismo::MaxMind::DB::BadDatabaseError do
-      Seismo::MaxMind::DB::Reader.new('README.md')
+    e = assert_raises Seismo::MMDB::BadDatabaseError do
+      Seismo::MMDB::Reader.new('README.md')
     end
     assert_equal(
       'Cannot find metadata start marker at README.md',
@@ -235,14 +235,14 @@ class LocateTest < Minitest::Test
   end
 
   def test_close
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
     reader.close
   end
 
   def test_double_close
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
     reader.close
@@ -251,7 +251,7 @@ class LocateTest < Minitest::Test
 
   # Must improve error message for usage of a closed reader
   def test_closed_get
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
     reader.close
@@ -265,7 +265,7 @@ class LocateTest < Minitest::Test
   end
 
   def test_closed_metadata
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/MaxMind-DB-test-decoder.mmdb"
     )
     reader.close
@@ -276,7 +276,7 @@ class LocateTest < Minitest::Test
   end
 
   def test_threads
-    reader = Seismo::MaxMind::DB::Reader.new(
+    reader = Seismo::MMDB::Reader.new(
       "#{DATADIR}/GeoIP2-Domain-Test.mmdb"
     )
 

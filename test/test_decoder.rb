@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'seismo/maxmind/db'
+require 'seismo/mmdb'
 require 'minitest/autorun'
 require 'mmdb_util'
 
@@ -226,7 +226,7 @@ class DecoderTest < Minitest::Test
 
     buf = IO::Buffer.new(input.size + 8)
     buf.set_string(input, 0)
-    dec = Seismo::MaxMind::DB::BufferDecoder.new(buf, 0, 0)
+    dec = Seismo::MMDB::BufferDecoder.new(buf, 0, 0)
     dec.follow_pointers = false
 
     r = dec.decode

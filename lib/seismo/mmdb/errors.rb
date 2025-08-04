@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Seismo::MaxMind::DB
+module Seismo::MMDB
   # Doc
   class BadDatabaseError < RuntimeError
     def self.cannot_find_metadata_marker(filename)

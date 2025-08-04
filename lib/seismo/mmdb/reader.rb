@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-require 'ipaddr'
-require 'seismo/maxmind/db/errors.rb'
-require 'seismo/maxmind/db/buffer_decoder.rb'
-require 'seismo/maxmind/db/db_miner.rb'
+require 'seismo/mmdb/db_miner.rb'
 
-module Seismo::MaxMind::DB
+module Seismo::MMDB
   # +Reader+ is the entry point to open a MaxMind DB for reading.
   # The main reason it exists is to create a Locator for its DB.
   # Nevertheless, it supports some low level DB exploration.

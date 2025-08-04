@@ -57,7 +57,7 @@ Get IP information with
 ipinfo = reader.get(ip)
 ```
 where `ip` is either a `IPAddr` or a `String` with the textual representation
-of an IP, either IPv4 or IPv6.
+of an IP (either IPv4 or IPv6).
 
 Close the `reader` when you are done:
 ```ruby

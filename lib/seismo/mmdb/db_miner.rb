@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 require 'ipaddr'
-require 'seismo/maxmind/db/errors.rb'
-require 'seismo/maxmind/db/buffer_decoder.rb'
+require 'seismo/mmdb/errors.rb'
+require 'seismo/mmdb/buffer_decoder.rb'
 
-module Seismo::MaxMind::DB
+module Seismo::MMDB
   # A +DBMiner+ is an internal class doing all the heavy decoding stuff
   # of a MMDB file.
   # There are 2 public classes leveraging this class funcionality:
   # Reader and SingleThreadedReader
   class DBMiner
-    EXTRAMAP = Seismo::MaxMind::DB::BufferDecoder::MAX_OVERREAD
+    EXTRAMAP = BufferDecoder::MAX_OVERREAD
 
     def initialize(filename)
       file = nil
@@ -20,7 +20,7 @@ module Seismo::MaxMind::DB
         size = file.size
         buf = IO::Buffer.map(file, size+EXTRAMAP, 0, IO::Buffer::READONLY)
         mdoff = DBMiner.find_metadata_start(filename, size, buf)
-        mdmap = Seismo::MaxMind::DB::BufferDecoder.new(buf, mdoff, mdoff).decode
+        mdmap = BufferDecoder.new(buf, mdoff, mdoff).decode
         md = Metadata.new(mdmap)
       rescue
         buf.free unless buf.nil?
@@ -62,8 +62,7 @@ module Seismo::MaxMind::DB
         above <= i && buf.slice(i, METADATA_MARKER_SIZE) != METADATA_MARKER
       return i + METADATA_MARKER_SIZE if above <= i
 
-      Seismo::MaxMind::DB::BadDatabaseError
-        .cannot_find_metadata_marker(filename)
+      BadDatabaseError.cannot_find_metadata_marker(filename)
     end
 
     def close

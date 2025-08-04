@@ -3,7 +3,7 @@
 require 'benchmark/ips'
 require 'ipaddr'
 require 'maxmind/db'
-require 'seismo/maxmind/db'
+require 'seismo/mmdb'
 
 READER_FILE = MaxMind::DB.new(
   'mmdbs/GeoLite2-City.mmdb',
@@ -13,7 +13,7 @@ READER_MEMORY = MaxMind::DB.new(
   'mmdbs/GeoLite2-City.mmdb',
   mode: MaxMind::DB::MODE_MEMORY
 )
-READER6 = Seismo::MaxMind::DB::Reader.new('mmdbs/GeoLite2-City.mmdb')
+READER6 = Seismo::MMDB::Reader.new('mmdbs/GeoLite2-City.mmdb')
 READER6_ST = READER6.single_threaded
 
 def random_ipv4

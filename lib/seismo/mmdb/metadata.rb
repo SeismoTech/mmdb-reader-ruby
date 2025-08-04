@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Seismo::MaxMind::DB
+module Seismo::MMDB
   # Metadata abstraction with strong checking that allows fast fail when
   # reading an illegal or corrupted DB file
   class Metadata
