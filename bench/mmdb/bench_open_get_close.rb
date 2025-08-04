@@ -29,4 +29,6 @@ Benchmark.ips do |x|
     reader.close
     info
   end
+
+  x.compare!
 end

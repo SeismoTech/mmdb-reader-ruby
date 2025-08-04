@@ -10,11 +10,17 @@ module Seismo::MaxMind::DB
       @pointer_base = pointer_base
       @offset = offset
       @follow_pointers = true
+      @ptr2key = nil
+      @inkey = false
     end
 
     attr_reader :pointer_base
-
     attr_accessor :offset, :follow_pointers
+
+    def remember_keys(enable = true)
+      @ptr2key = enable ? Hash.new : nil if enable == @ptr2key.nil?
+      self
+    end
 
     def decode
       i = @offset
@@ -44,7 +50,6 @@ module Seismo::MaxMind::DB
 
       @offset = i
 
-      # puts("Type #{type}")
       case type
       when 1 then decode_pointer(size)
       when 2 then decode_string(size)
@@ -62,7 +67,6 @@ module Seismo::MaxMind::DB
       when 14 then decode_boolean(size)
       when 15 then decode_float
       else
-        puts "Unknown type #{type}, #{control}, #{i}, #{@offset}"
         unknown_type(type)
       end
     end
@@ -95,10 +99,11 @@ module Seismo::MaxMind::DB
       ptr += @pointer_base
 
       if @follow_pointers
-        # puts("Enter pointer #{ptr} #{size} #{pointer_base}")
-        @offset = ptr
-        x = decode
-        # puts("Exit pointer")
+        if !@inkey || (x = @ptr2key[ptr]).nil?
+          @offset = ptr
+          x = decode
+          @ptr2key[ptr] = x if @inkey
+        end
       else
         x = ptr
       end
@@ -195,10 +200,14 @@ module Seismo::MaxMind::DB
     end
 
     def decode_map(size)
+      was_in_key = @inkey
+      mark_in_key = !@ptr2key.nil?
       x = {}
       i = 0
       while i < size
+        @inkey = mark_in_key
         k = decode
+        @inkey = was_in_key
         v = decode
         x[k] = v
         i += 1

@@ -13,7 +13,7 @@ loop do
   puts(ip)
   info1 = mmreader.get(ip)
   puts(">>>  #{info1}")
-  info2 = loc.locate(ip)
+  info2 = loc.get(ip)
   puts(">>>  #{info2}")
   break if info1 != info2
 end

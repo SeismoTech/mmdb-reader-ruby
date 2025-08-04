@@ -16,7 +16,9 @@ module Seismo
   end
 end
 
-require 'seismo/maxmind/db/errors'
-require 'seismo/maxmind/db/metadata'
-require 'seismo/maxmind/db/buffer_decoder'
-require 'seismo/maxmind/db/reader'
+require 'seismo/maxmind/db/errors.rb'
+require 'seismo/maxmind/db/metadata.rb'
+require 'seismo/maxmind/db/buffer_decoder.rb'
+require 'seismo/maxmind/db/db_miner.rb'
+require 'seismo/maxmind/db/reader.rb'
+require 'seismo/maxmind/db/single_threaded_reader.rb'

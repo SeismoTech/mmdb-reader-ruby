@@ -7,6 +7,12 @@ require 'mmdb_util'
 # Forked from https://github.com/maxmind/MaxMind-DB-Reader-ruby
 # Adapted to IO:Buffer
 class DecoderTest < Minitest::Test
+  def test_seismo
+    check_decoding(
+      'header', "SEISMO IPRION A DB\r\n".b, "EISMO IPRION A DB\r\n"
+    )
+  end
+
   def test_arrays
     arrays = {
       "\x00\x04".b => [],

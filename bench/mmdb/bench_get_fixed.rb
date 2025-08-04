@@ -15,6 +15,7 @@ READER_MEMORY = MaxMind::DB.new(
   mode: MaxMind::DB::MODE_MEMORY
 )
 READER6 = Seismo::MaxMind::DB::Reader.new('mmdbs/GeoLite2-City.mmdb')
+READER6_ST = READER6.single_threaded
 
 Benchmark.ips do |x|
   x.report 'MaxMind file' do
@@ -25,7 +26,13 @@ Benchmark.ips do |x|
     READER_MEMORY.get(IP)
   end
 
-  x.report 'seismo' do
+  x.report 'seismo buffer' do
     READER6.get(IP)
   end
+
+  x.report 'seismo buffer single threaded' do
+    READER6_ST.get(IP)
+  end
+
+  x.compare!
 end

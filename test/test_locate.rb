@@ -16,8 +16,10 @@ class LocateTest < Minitest::Test
         check_metadata(reader, ipver, recsize)
         if ipver == 4
           check_ipv4(reader, filename)
+          check_ipv4(reader.single_threaded, filename)
         else
           check_ipv6(reader, filename)
+          check_ipv6(reader.single_threaded, filename)
         end
         reader.close
       end

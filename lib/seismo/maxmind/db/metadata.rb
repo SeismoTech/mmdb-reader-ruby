@@ -1,33 +1,34 @@
 # frozen_string_literal: true
 
 module Seismo::MaxMind::DB
-  # Doc
+  # Metadata abstraction with strong checking that allows fast fail when
+  # reading an illegal or corrupted DB file
   class Metadata
-    # Doc
+    # DB major version
     attr_reader :major_version
 
-    # Doc
+    # DB minor version
     attr_reader :minor_version
 
-    # Doc
+    # DB node count
     attr_reader :node_count
 
-    # Doc
+    # DB record size in bits. Should be one of 24, 28 or 43
     attr_reader :record_size
 
-    # Doc
+    # IP version mapped in this db. Should be 4 o 6
     attr_reader :ip_version
 
-    # Doc
+    # A description of the database contents
     attr_reader :database_type
 
-    # Doc
+    # Build timestamp as Unix epoch in milliseconds
     attr_reader :build_epoch
 
-    # Doc
+    # An Array of string listing languages used in this database
     attr_reader :languages
 
-    # Doc
+    # A Hash with database information
     attr_reader :description
 
     def ipv4? = @ip_version == 4
