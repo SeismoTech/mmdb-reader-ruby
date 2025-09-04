@@ -43,6 +43,22 @@ a sensible performance improvement:
 |Seismo Buffer |  2.386k i/s | 3.606k i/s |
 
 
+Cloning
+----------------------------------------------------------------------
+
+This project has submodules; please, clone it with
+```
+git clone --recurse-submodules https://github.com/SeismoTech/mmdb-reader-ruby.git
+```
+or retrieve submodules after a normal clone
+```
+git clone https://github.com/SeismoTech/mmdb-reader-ruby.git
+cd mmdb-reader-ruby
+git submodule init
+git submodule update
+```
+
+
 API
 ----------------------------------------------------------------------
 
